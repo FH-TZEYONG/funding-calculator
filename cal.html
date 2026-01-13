@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funding Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand-color: #4DBAB1;
+            --brand-hover: #3da098;
+            --text-main: #2d3436;
+            --text-light: #b2bec3;
+            --card-border: #e1e1e1;
+            --focus-shadow: 0 20px 40px rgba(77, 186, 177, 0.15);
+        }
+
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- Main Layout Wrapper --- */
+        .wrapper {
+            width: 95%;
+            max-width: 1000px;
+            padding: 40px;
+            box-sizing: border-box;
+            background: #ffffff;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            border: 1px solid #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+
+        /* --- Grid for the Two Separate Boxes --- */
+        .cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        /* --- Individual Input Cards --- */
+        .input-card {
+            background: #ffffff;
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: text;
+        }
+
+        .input-card:hover {
+            border-color: #d1d1d1;
+            transform: translateY(-3px);
+        }
+
+        /* --- INTERACTIVE ANIMATION STATES --- */
+        .cards-container.has-focus .input-card {
+            opacity: 0.5;
+            transform: scale(0.98);
+            filter: grayscale(100%);
+        }
+
+        .cards-container.has-focus .input-card.active {
+            opacity: 1;
+            transform: scale(1.02);
+            border-color: var(--brand-color);
+            box-shadow: var(--focus-shadow);
+            filter: grayscale(0%);
+            z-index: 10;
+        }
+
+        /* --- Form Elements --- */
+        .label-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+            padding-bottom: 5px;
+        }
+
+        .input-card.active .input-wrapper {
+            border-bottom-color: var(--brand-color);
+        }
+
+        /* --- New Fixed Dropdown Styling --- */
+        select.currency-select {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-main);
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            outline: none;
+            margin-right: 15px;
+            padding-right: 25px;
+            /* Space for the arrow */
+
+            /* Native removal of default style */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+
+            /* Custom Minimalist SVG Arrow as Background */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232d3436' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right center;
+            background-size: 16px;
+        }
+
+        /* Fix for IE/Edge to remove native arrow */
+        select.currency-select::-ms-expand {
+            display: none;
+        }
+
+        .static-currency {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-right: 15px;
+        }
+
+        /* Big Inputs */
+        input[type="text"] {
+            font-family: 'Poppins', sans-serif;
+            font-size: 40px;
+            font-weight: 600;
+            color: var(--brand-color);
+            border: none;
+            outline: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input::placeholder {
+            color: #dfe6e9;
+        }
+
+        /* --- Big Button --- */
+        .btn-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-main {
+            background-color: var(--brand-color);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+
+            /* --- CHANGED HERE: Less padding, smaller max-width --- */
+            padding: 15px 30px;
+            width: 100%;
+            max-width: 250px;
+
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(77, 186, 177, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(77, 186, 177, 0.4);
+            background-color: var(--brand-hover);
+        }
+
+        .btn-main:active {
+            transform: scale(0.98);
+        }
+
+        /* Error Message */
+        .error-msg {
+            color: #e74c3c;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 15px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+
+        .input-card.error .error-msg {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .input-card.error {
+            border-color: #e74c3c;
+        }
+
+        /* --- Result Overlay --- */
+        #result-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .result-box {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            input[type="text"] {
+                font-size: 32px;
+            }
+
+            .input-card {
+                padding: 30px 20px;
+            }
+
+            .wrapper {
+                padding: 30px 20px;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper" id="mainWrapper">
+
+        <div class="cards-container" id="cardsGrid">
+
+            <div class="input-card" id="card-gmv" onclick="focusInput('gmv')">
+                <label class="label-text">Total Store GMV <span id="month-label"
+                        style="font-weight:400; opacity:0.6; font-size:14px; text-transform:none; margin-left: 5px;"></span></label>
+                <div class="input-wrapper">
+
+                    <select class="currency-select" id="currencySelector" onchange="syncCurrency(event)"
+                        onclick="event.stopPropagation()">
+                        <option value="SGD">SGD</option>
+                        <option value="USD">USD</option>
+                        <option value="MYR">MYR</option>
+                        <option value="IDR">IDR</option>
+                    </select>
+
+                    <input type="text" id="gmv" placeholder="0" enterkeyhint="next" oninput="formatInput(this)"
+                        onkeydown="handleEnter(event, 'cost')" onfocus="activateCard('card-gmv')"
+                        onblur="handleGmvBlur()">
+                </div>
+                <div class="error-msg">Please enter valid sales data.</div>
+            </div>
+
+            <div class="input-card" id="card-cost" onclick="focusInput('cost')">
+                <label class="label-text">Total Inventory Cost</label>
+                <div class="input-wrapper">
+                    <span class="static-currency displayCurrency">SGD</span>
+                    <input type="text" id="cost" placeholder="0" enterkeyhint="done" oninput="formatInput(this)"
+                        onkeydown="handleEnter(event, 'submit')" onfocus="activateCard('card-cost')"
+                        onblur="deactivateCard()">
+                </div>
+                <div class="error-msg">Please enter inventory costs.</div>
+            </div>
+
+        </div>
+
+        <div class="btn-container">
+            <button id="submitBtn" class="btn-main" onclick="calculate()">Check Eligibility</button>
+        </div>
+
+    </div>
+
+    <div id="result-overlay">
+        <div class="result-box" id="result-content"></div>
+    </div>
+
+    <script>
+        // 1. Date Setup
+        window.onload = function () {
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const d = new Date();
+            d.setMonth(d.getMonth() - 1);
+            document.getElementById('month-label').innerText = `(${monthNames[d.getMonth()]} ${d.getFullYear()})`;
+        };
+
+        // 2. Formatting Numbers
+        function formatInput(el) {
+            let value = el.value.replace(/[^0-9]/g, '');
+            if (value) {
+                el.value = parseInt(value).toLocaleString();
+                el.closest('.input-card').classList.remove('error');
+            } else {
+                el.value = '';
+            }
+        }
+
+        // 3. Handle Enter Key Navigation
+        function handleEnter(event, target) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (target === 'submit') {
+                    calculate();
+                } else {
+                    focusInput(target);
+                    activateCard('card-' + target);
+                }
+            }
+        }
+
+        // 4. SMART BLUR LOGIC (The "Click Anywhere" Feature)
+        function handleGmvBlur() {
+            const gmvVal = document.getElementById('gmv').value;
+
+            // Use timeout to check where focus went after blur
+            setTimeout(() => {
+                const activeEl = document.activeElement;
+                const submitBtn = document.getElementById('submitBtn');
+                const costInput = document.getElementById('cost');
+
+                // Logic: If user typed something AND they clicked on empty space (body) or the wrapper
+                // AND they didn't specifically click the Submit Button or the Cost Input (avoid double trigger)
+                if (gmvVal.length > 0 && activeEl !== submitBtn && activeEl !== costInput) {
+                    focusInput('cost');
+                    activateCard('card-cost');
+                } else {
+                    // Standard deactivate if they clicked nothing interactive
+                    if (activeEl !== submitBtn && activeEl !== costInput) {
+                        deactivateCard();
+                    }
+                }
+            }, 150);
+        }
+
+        // 5. Currency Sync
+        function syncCurrency(e) {
+            e.stopPropagation();
+            const selected = document.getElementById('currencySelector').value;
+            document.querySelectorAll('.displayCurrency').forEach(el => el.innerText = selected);
+        }
+
+        // 6. Animation Logic
+        function focusInput(id) {
+            document.getElementById(id).focus();
+        }
+
+        function activateCard(cardId) {
+            const grid = document.getElementById('cardsGrid');
+            grid.classList.add('has-focus');
+            document.querySelectorAll('.input-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(cardId).classList.add('active');
+        }
+
+        function deactivateCard() {
+            setTimeout(() => {
+                const active = document.activeElement;
+                if (active.tagName !== 'INPUT' && active.tagName !== 'SELECT') {
+                    document.getElementById('cardsGrid').classList.remove('has-focus');
+                    document.querySelectorAll('.input-card').forEach(c => c.classList.remove('active'));
+                }
+            }, 150);
+        }
+
+        // 7. Logic & Results
+        function getVal(id) {
+            return parseFloat(document.getElementById(id).value.replace(/,/g, '')) || 0;
+        }
+
+        function calculate() {
+            const gmv = getVal('gmv');
+            const cost = getVal('cost');
+            const currency = document.getElementById('currencySelector').value;
+
+            let valid = true;
+            if (gmv === 0) { document.getElementById('card-gmv').classList.add('error'); valid = false; }
+            if (cost === 0) { document.getElementById('card-cost').classList.add('error'); valid = false; }
+            if (!valid) return;
+
+            const overlay = document.getElementById('result-overlay');
+            const content = document.getElementById('result-content');
+            overlay.style.display = "flex";
+
+            let html = '';
+            const margin = (gmv - cost) / cost;
+
+            const hStyle = `font-size:32px; font-weight:600; margin:10px 0; color: #2d3436;`;
+            const pStyle = `font-size:18px; color: #636e72; line-height: 1.6; margin-bottom:30px;`;
+            const btnStyle = `background:transparent; border:2px solid #4DBAB1; color:#4DBAB1; padding:10px 30px; border-radius:30px; font-weight:600; cursor:pointer; font-size:16px; transition: all 0.3s;`;
+
+            if (gmv < 8000) {
+                html = `
+                <div style="font-size:80px; margin-bottom: 20px;">❌</div>
+                <h2 style="${hStyle}">Not Eligible</h2>
+                <p style="${pStyle}">Your GMV is currently ${gmv.toLocaleString()} ${currency}.<br>We require a minimum of 8,000 ${currency} to process funding.</p>
+                <button onclick="closeResult()" style="${btnStyle}">Try Again</button>
+            `;
+            } else if (margin >= 0.8) {
+                html = `
+                <div style="font-size:80px; margin-bottom: 20px;">🥳</div>
+                <h2 style="${hStyle} color:#4DBAB1;">You Are Eligible!</h2>
+                <p style="${pStyle}">Your store performance is excellent. We are ready to fund your inventory.</p>
+                <button onclick="window.open('https://fundedhere.wixsite.com/esellers/form', '_blank')" style="background:#4DBAB1; color:white; padding:15px 50px; border-radius:8px; border:none; cursor:pointer; font-size:18px; font-weight:600; box-shadow: 0 10px 20px rgba(77,186,177,0.3);">Apply Now</button>
+                <br><br>
+                <button onclick="closeResult()" style="border:none; background:none; color:#b2bec3; cursor:pointer; text-decoration:underline;">Check another</button>
+            `;
+            } else {
+                html = `
+                <div style="font-size:80px; margin-bottom: 20px;">📋</div>
+                <h2 style="${hStyle}">Manual Review</h2>
+                <p style="${pStyle}">You are very close to the threshold. Our team needs to review your data manually.</p>
+                
+                <a href="https://wa.me/60133028990" target="_blank" rel="noopener noreferrer" style="display:inline-block; text-decoration:none; background:transparent; border:2px solid #4DBAB1; color:#4DBAB1; padding:10px 30px; border-radius:8px; font-weight:600; font-family:'Poppins', sans-serif; font-size:16px; transition: all 0.3s;">Speak to a Specialist</a>
+                
+                <br><br>
+                <button onclick="closeResult()" style="border:none; background:none; color:#b2bec3; cursor:pointer; text-decoration:underline;">Back</button>
+            `;
+            }
+
+            content.innerHTML = html;
+        }
+
+        function closeResult() {
+            document.getElementById('result-overlay').style.display = "none";
+        }
+    </script>
+
+</body>
+
+</html>
